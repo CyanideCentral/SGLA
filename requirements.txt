@@ -1,6 +1,9 @@
 # This file may be used to create an environment using:
 # $ conda create --name <env> --file <this file>
 # platform: linux-64
+python=3.9.13
+mkl=2021.4.0
+mkl-service=2.4.0
 blas=1.0=mkl
 faiss-gpu=1.7.3
 mkl=2021.4.0
