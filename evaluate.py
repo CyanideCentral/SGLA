@@ -61,7 +61,7 @@ class clustering_metrics():
 
 def ovr_evaluate(embeds, labels):
     # Labeled data from 10% to 90%
-    if config.approx_knn:
+    if config.scale:
         labeled = np.arange(0.9, 1.0, 0.01)[::-1]
     else:
         labeled = np.arange(0.1, 1.0, 0.1)[::-1]
