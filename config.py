@@ -1,22 +1,16 @@
 
-dataset = None
-embedding = False
-
-knn_k = 10
-sc_eig_tol = 1e-2
-optimize_weights = True # disable for UNIFORM variant
-fixed_weights = [1./3] * 3
-opt_cobyla_rhobeg = 0.05
-opt_max_iters = 1000
-opt_eig_tol = 0.01 # convergence threshold for eigensolver used for weight optimization
-opt_w_tol = 1e-2 # convergence threshold for COBYLA optimizer
-opt_objective = 'combine' # Optimization objective. 'con': connectivity, 'gap': eigengap, 'reg': relative eigen-gap
-obj_alpha = 1.0 #connectivity obj weight alpha
-obj_regular = 0.5 # regularizer weight gamma
-seed = 0 #random seed
-ridge_alpha = 0.05 #ridge linear regression
-embed_dim = 64 # embedding demension
-step_length = 0.5 #sample step for SMGF_PI funciton
 scale = False # enable configurations for large-scale data
 verbose = False # verbose output
+knn_k = 10 # K for KNN graph construction
+eig_tol = 0.01 # precision of eigsh solver
+opt_cobyla_rhobeg = 0.05 # COBYLA step size parameter
+opt_t_max = 1000 # maximum number of iterations for COBYLA optimizer
+opt_epsilon = 0.01 # convergence threshold for COBYLA optimizer
+obj_alpha = 1.0 # coefficient of connectivity objective
+obj_gamma = 0.5 # coefficient of weight regularization
+ridge_alpha = 0.05 # regularization parameter for ridge regression
+
+# embedding task
+embedding = False # True for embedding task; False for clustering task
+embed_dim = 64 # embedding output demension
 embed_rank = 32 # NETMF/SKETCHNE parameter

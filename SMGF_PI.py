@@ -22,7 +22,6 @@ def parse_args():
     p.add_argument('--knn_k', type=int, default=10, help='k neighbors except imdb=500, yelp=200' )
     p.add_argument('--embed_rank', type=int, default=32, help='eigsh rank in netmf' )
     args = p.parse_args()
-    config.dataset = args.dataset
     config.verbose = args.verbose
     config.embedding = args.embedding
     config.knn_k = args.knn_k
@@ -95,7 +94,7 @@ def SMGF_PI(dataset):
     lapLO = sla.LinearOperator((n, n), matvec=mv_lap)
     for num in range(len(sample_w)):
         view_weights=sample_w[num]
-        eig_val, eig_vec = sla.eigsh(lapLO, num_clusters+1, which='SM', tol=config.sc_eig_tol, maxiter=1000)
+        eig_val, eig_vec = sla.eigsh(lapLO, num_clusters+1, which='SM', tol=config.eig_tol, maxiter=1000)
         obj = eig_val[num_clusters-1] / eig_val[num_clusters] - config.obj_alpha*eig_val[1]
         sample_obj.append(obj)
 
@@ -103,17 +102,17 @@ def SMGF_PI(dataset):
     x = np.asarray(sample_w)[:,:-1]
     y = np.asarray(sample_obj)
     poly_reg =PolynomialFeatures(degree=2) 
-    X_ploy =poly_reg.fit_transform(x)
+    x_polynomial =poly_reg.fit_transform(x)
     lin_reg_2=linear_model.Ridge(alpha=config.ridge_alpha, fit_intercept=False)
-    lin_reg_2.fit(X_ploy,y)
+    lin_reg_2.fit(x_polynomial,y)
     
     w_constraint = [lambda w: 1.0 - np.sum(w), lambda w: w]
     def objective_function(w):
         view_weights[:-1] = w
         view_weights[-1] = 1.0 - np.sum(w)
-        return lin_reg_2.predict(poly_reg.fit_transform(np.asarray(view_weights[:-1]).reshape(1,-1))) + config.obj_regular*np.power(np.asarray(view_weights),2).sum()
+        return lin_reg_2.predict(poly_reg.fit_transform(np.asarray(view_weights[:-1]).reshape(1,-1))) + config.obj_gamma*np.power(np.asarray(view_weights),2).sum()
     opt_time=time.time()
-    opt_w = fmin_cobyla(objective_function, np.full((nv-1), 1.0/nv), w_constraint, rhoend=config.opt_w_tol, maxfun=1000, rhobeg=config.opt_cobyla_rhobeg, catol=0.0000001, disp=3 if config.verbose else 0)
+    opt_w = fmin_cobyla(objective_function, np.full((nv-1), 1.0/nv), w_constraint, rhoend=config.opt_epsilon, maxfun=config.opt_t_max, rhobeg=config.opt_cobyla_rhobeg, catol=0.0000001, disp=3 if config.verbose else 0)
     if config.verbose:
         print(f"cobyla optimization time: {time.time()-opt_time}")
     view_weights[:-1] = opt_w
@@ -134,7 +133,7 @@ def SMGF_PI(dataset):
     else: # clustering
         lapLO = sla.LinearOperator((n, n), matvec=mv_lap)
         try:
-            eig_val, eig_vec = sla.eigsh(lapLO, num_clusters+2, which='SM', tol=config.sc_eig_tol, maxiter=1000)
+            eig_val, eig_vec = sla.eigsh(lapLO, num_clusters+2, which='SM', tol=config.eig_tol, maxiter=1000)
         except sla.ArpackError as e:
             eig_val, eig_vec = e.eigenvalues, e.eigenvectors
             print(f"{' '.join([str(w) for w in view_weights])} {0.} {0.} {0.} {0.} {time.time() - start_time} {1.} NoConverge")
@@ -148,8 +147,8 @@ def SMGF_PI(dataset):
 
 if __name__ == '__main__':
     args = parse_args()
-    dataset = load_data(config.dataset)
-    if config.dataset.startswith("mag"):
+    dataset = load_data(args.dataset)
+    if args.dataset.startswith("mag"):
         config.scale = True
     SMGF_PI(dataset)
 

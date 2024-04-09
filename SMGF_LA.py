@@ -20,7 +20,6 @@ def parse_args():
     p.add_argument('--knn_k', type=int, default=10, help='k neighbors except imdb=500, yelp=200' )
     p.add_argument('--embed_rank', type=int, default=32, help='eigsh rank in netmf' )
     args = p.parse_args()
-    config.dataset = args.dataset
     config.verbose = args.verbose
     config.embedding = args.embedding
     config.knn_k = args.knn_k
@@ -86,19 +85,18 @@ def SMGF_LA(dataset):
         print('Time for constructing linear operator: {:.4f}s'.format(time.time()-start_time))
     
     opt_time = time.time()
-    obj_num_eigs = { 'con': 2, 'gap': num_clusters+1, 'combine': num_clusters+1, 'reg':num_clusters+1,'ori': num_clusters+1}
     eig_vec = None
     def eig_obj(w):
         nonlocal eig_vec
         view_weights[:-1] = w
         view_weights[-1] = 1.0 - np.sum(w)
-        eig_val, eig_vec = sla.eigsh(lapLO, obj_num_eigs[config.opt_objective], which='SM', tol=config.opt_eig_tol, maxiter=1000)
+        eig_val, eig_vec = sla.eigsh(lapLO, num_clusters+1, which='SM', tol=config.eig_tol, maxiter=1000)
         eig_val = eig_val.real
         eig_val.sort()
-        return eig_val[num_clusters-1] / eig_val[num_clusters] - config.obj_alpha*eig_val[1] + config.obj_regular*np.power(np.asarray(view_weights),2).sum()
+        return eig_val[num_clusters-1] / eig_val[num_clusters] - config.obj_alpha*eig_val[1] + config.obj_gamma*np.power(np.asarray(view_weights),2).sum()
     
     w_constraint = [{'type': 'ineq', 'fun': lambda w: 1.0 - np.sum(w)}, {'type': 'ineq', 'fun': lambda w: min(w)}, {'type': 'ineq', 'fun': lambda w: 1.0-max(w)}]
-    opt_w = minimize(eig_obj, np.full((nv-1), 1.0/nv), method='COBYLA', tol=config.opt_w_tol, constraints=w_constraint, options={'maxiter': 1000, 'rhobeg': config.opt_cobyla_rhobeg, 'disp': config.verbose})
+    opt_w = minimize(eig_obj, np.full((nv-1), 1.0/nv), method='COBYLA', tol=config.opt_epsilon, constraints=w_constraint, options={'maxiter': config.opt_t_max, 'rhobeg': config.opt_cobyla_rhobeg, 'disp': config.verbose})
     if config.verbose:
         print(f"opt_time: {time.time()-opt_time}")
 
@@ -129,8 +127,8 @@ def SMGF_LA(dataset):
 
 if __name__ == '__main__':
     args = parse_args()
-    dataset = load_data(config.dataset)
-    if config.dataset.startswith("mag"):
+    dataset = load_data(args.dataset)
+    if args.dataset.startswith("mag"):
         config.scale = True
     SMGF_LA(dataset)
 
