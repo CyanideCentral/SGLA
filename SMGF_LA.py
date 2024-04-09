@@ -15,15 +15,29 @@ from sparse_dot_mkl import dot_product_mkl
 def parse_args():
     p = argparse.ArgumentParser(description='Set parameter')
     p.add_argument('--dataset', type=str, default='dblp', help='dataset name (e.g.: acm, dblp, imdb)')
+    p.add_argument('--scale', action='store_true', help='configurations for large-scale data (mageng/magphy)')
     p.add_argument('--embedding', action='store_true', help='run embedding task')
     p.add_argument('--verbose', action='store_true', help='print verbose logs')
-    p.add_argument('--knn_k', type=int, default=10, help='k neighbors except imdb=500, yelp=200' )
-    p.add_argument('--embed_rank', type=int, default=32, help='eigsh rank in netmf' )
+    p.add_argument('--knn_k', type=int, default=10, help='k neighbors except imdb=500, yelp=200 query=20' )
+    p.add_argument('--embed_dim', type=int, default=64, help='embedding output demension')
+    p.add_argument('--embed_rank', type=int, default=32, help='NETMF/SKETCHNE parameter' )
+    p.add_argument('--eig_tol', type=float, default=1e-2, help='precision of eigsh solver' )
+    p.add_argument('--opt_t_max', type=int, default=1000, help='maximum number of iterations for COBYLA optimizer')
+    p.add_argument('--opt_epsilon', type=float, default=1e-2, help='convergence threshold for COBYLA optimizer')
+    p.add_argument('--obj_alpha', type=float, default=1.0, help='coefficient of connectivity objective')
+    p.add_argument('--obj_gamma', type=float, default=0.5, help='coefficient of weight regularization')
+    
     args = p.parse_args()
     config.verbose = args.verbose
     config.embedding = args.embedding
     config.knn_k = args.knn_k
+    config.embed_dim = args.embed_dim
     config.embed_rank = args.embed_rank
+    config.eig_tol = args.eig_tol
+    config.opt_t_max = args.opt_t_max
+    config.opt_epsilon = args.opt_epsilon
+    config.obj_alpha = args.obj_alpha
+    config.obj_gamma = args.obj_gamma
     return args
 
 def SMGF_LA(dataset):
@@ -33,8 +47,8 @@ def SMGF_LA(dataset):
     g_adjs = dataset['graphs']
     features = dataset['features']
     view_weights = np.full(nv, 1.0/nv)
-    start_time = time.time()
     knn_adjs = []
+    start_time = time.time()
 
     for X in features:    
         import faiss
@@ -130,6 +144,7 @@ if __name__ == '__main__':
     dataset = load_data(args.dataset)
     if args.dataset.startswith("mag"):
         config.scale = True
+        config.embed_rank=64
     SMGF_LA(dataset)
 
 
