@@ -85,7 +85,7 @@ def load_data(dataset_name):
         else:
             np.fill_diagonal(dataset['graphs'][i], 0)
         # convert to undirected graph, if necessary
-        if (dataset['graphs'][0]!=dataset['graphs'][0].T).sum() > 0:
+        if (dataset['graphs'][i]!=dataset['graphs'][i].T).sum() > 0:
             dataset['graphs'][i] = dataset['graphs'][i] + dataset['graphs'][i].T
         dataset['graphs'][i][dataset['graphs'][i]>1] = 1
         if sp.issparse(dataset['graphs'][i]):

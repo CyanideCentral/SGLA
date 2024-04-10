@@ -130,7 +130,7 @@ def SMGF_PI(dataset):
     opt_time=time.time()
     opt_w = fmin_cobyla(objective_function, np.full((nv-1), 1.0/nv), w_constraint, rhoend=config.opt_epsilon, maxfun=config.opt_t_max, rhobeg=config.opt_cobyla_rhobeg, catol=0.0000001, disp=3 if config.verbose else 0)
     if config.verbose:
-        print(f"cobyla optimization time: {time.time()-opt_time}")
+        print(f"opt_time: {time.time()-opt_time}")
     view_weights[:-1] = opt_w
     view_weights[-1] = 1.0 - np.sum(opt_w)
 
@@ -145,7 +145,7 @@ def SMGF_PI(dataset):
         embed_time = time.time() - start_time
         peak_memory_MBs = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024.0
         ovr_evaluate(emb, dataset['labels'])
-        print(f"Time: {embed_time:.3f}s RAM: {int(peak_memory_MBs)}MB Weights: {', '.join([f'{w:.2f}' for w in view_weights])}")
+        print(f"Time: {embed_time:.3f}s RAM: {int(peak_memory_MBs)}MB")
     else: # clustering
         lapLO = sla.LinearOperator((n, n), matvec=mv_lap)
         try:
@@ -159,7 +159,10 @@ def SMGF_PI(dataset):
         peak_memory_MBs = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024.0
         cm = clustering_metrics(dataset['labels'], predict_clusters)
         acc, nmi, f1, _, ari, _ = cm.evaluationClusterModelFromLabel()
-        print(f"Acc: {acc:.3f} F1: {f1:.3f} NMI: {nmi:.3f} ARI: {ari:.3f} Time: {cluster_time:.3f}s RAM: {int(peak_memory_MBs)}MB Weights: {', '.join([f'{w:.2f}' for w in view_weights])}")
+        print(f"Acc: {acc:.3f} F1: {f1:.3f} NMI: {nmi:.3f} ARI: {ari:.3f} Time: {cluster_time:.3f}s RAM: {int(peak_memory_MBs)}MB")
+    
+    if config.verbose:
+        print(f"Weights: {', '.join([f'{w:.2f}' for w in view_weights])}")
 
 if __name__ == '__main__':
     args = parse_args()

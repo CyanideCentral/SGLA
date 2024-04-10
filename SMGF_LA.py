@@ -125,19 +125,17 @@ def SMGF_LA(dataset):
         embed_time = time.time() - start_time
         peak_memory_MBs = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024.0
         emb_results = ovr_evaluate(emb, dataset['labels'])
-        print(f"Time: {embed_time:.3f}s RAM: {int(peak_memory_MBs)}MB Weights: {', '.join([f'{w:.2f}' for w in view_weights])}")
+        print(f"Time: {embed_time:.3f}s RAM: {int(peak_memory_MBs)}MB")
     else: # clustering
         predict_clusters, _ = discretize(eig_vec[:, :num_clusters])
         cluster_time = time.time() - start_time
         peak_memory_MBs = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024.0
         cm = clustering_metrics(dataset['labels'], predict_clusters)
         acc, nmi, f1, _, ari, _ = cm.evaluationClusterModelFromLabel()
-        print(f"Acc: {acc:.3f} F1: {f1:.3f} NMI: {nmi:.3f} ARI: {ari:.3f} Time: {cluster_time:.3f}s RAM: {int(peak_memory_MBs)}MB Weights: {', '.join([f'{w:.2f}' for w in view_weights])}")
+        print(f"Acc: {acc:.3f} F1: {f1:.3f} NMI: {nmi:.3f} ARI: {ari:.3f} Time: {cluster_time:.3f}s RAM: {int(peak_memory_MBs)}MB")
 
-    if config.embedding:
-        return list(emb_results) + [embed_time]
-    else:
-        return [acc, f1, nmi, ari, cluster_time]
+    if config.verbose:
+        print(f"Weights: {', '.join([f'{w:.2f}' for w in view_weights])}")
 
 if __name__ == '__main__':
     args = parse_args()
