@@ -23,6 +23,7 @@ def encode_onehot(labels):
 
 def load_data(dataset_name):
     dataset = {}
+    dataset_name = dataset_name.lower()
     # Six multiplex datasets
     if dataset_name == 'acm':
         data = sio.loadmat("./data/acm/ACM3025.mat")

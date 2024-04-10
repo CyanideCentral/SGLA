@@ -4,26 +4,25 @@ This repository contains the implementation of **SMGF** algorithm.
 
 ## Prerequisites
 
-Install dependencies by `conda create --name <env> --file requirements.txt -c pytorch`
+Install dependencies by `conda create --name <env> --file requirements.txt -c pytorch`.
 
-Unzip the content of "data/data.zip" into "data" folder to use datasets except MAGENG,MAGPHY.
+Unzip the content of "data.zip" into "data" folder by `unzip data.zip` to use datasets except MAGENG & MAGPHY.
 
-Please download complete used datasets in **url**
+Please download complete used datasets including MAGENG & MAGPHY in **url**.
 
 ## Usage
 
 **11 available datasets as follows**: 
 
-6 muliplex datasets: ACM,DBLP,IMDB,Yelp,Freebase,RM
+6 muliplex datasets: ACM, DBLP, IMDB, Yelp, Freebase, RM.
 
-3 graph datasets with mulipile features: Amazon-photos,Amazon-computers,MAGENG,MAGPHY.
+5 graph datasets with mulipile features: Query, Amazon-photos, Amazon-computers, MAGENG, MAGPHY.
 
 **2 Spectrum-guided functions for multi-view graph learning**:
 
 SMGF-LA directly optimizes the objective with a derivative-free iterative method. 
 
-SMGF-PI finds a surrogate objective via quadratic regression for
-efficient optimization. 
+SMGF-PI finds a surrogate objective via quadratic regression for efficient optimization. 
 
 Please choose the one you want to use.
 
@@ -39,10 +38,10 @@ Parameters used:
 | --embed_dim   | 64      | LA/PI  | embedding output demension                             |
 | --embed_rank  | 32      | LA/PI  | NETMF/SKETCHNE parameter for embedding                 |
 | --eig_tol     | 0.01    | LA/PI  | precision of eigsh solver                              |
-| --opt_t_max   | 1000    | LA/PI  | maximum number of iterations for COBYLA optimizer      |
-| --opt_epsilon | 0.01    | LA/PI  | convergence threshold for COBYLA optimizer             |
-| --obj_alpha   | 1.0     | LA/PI  | coefficient of connectivity objective                  |
-| --obj_gamma   | 0.5     | LA/PI  | coefficient of weight regularization                   |
-| --ridge_alpha | 0.05    | PI     | regularization parameter for ridge regression          |
+| --opt_t_max   | 1000    | LA/PI  | $T_{max}$, maximum number of iterations for COBYLA optimizer      |
+| --opt_epsilon | 0.01    | LA/PI  | $\epsilon$, convergence threshold for COBYLA optimizer             |
+| --obj_alpha   | 1.0     | LA/PI  | $\alpha$, coefficient of connectivity objective                  |
+| --obj_gamma   | 0.5     | LA/PI  | $\gamma$, coefficient of weight regularization                   |
+| --ridge_alpha | 0.05    | PI     | $a_r$, regularization parameter for ridge regression          |
 
-See in [command.sh](command.sh) for details
+See [command.sh](command.sh) for command line in details

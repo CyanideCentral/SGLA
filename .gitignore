@@ -3,3 +3,4 @@ __pycache__/
 bash.sh
 *log
 scale/
+tests.sh
