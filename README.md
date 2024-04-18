@@ -38,7 +38,7 @@ Parameters used:
 | --embed_dim   | 64      | LA/PI  | embedding output demension                             |
 | --embed_rank  | 32      | LA/PI  | NETMF/SKETCHNE parameter for embedding                 |
 | --eig_tol     | 0.01    | LA/PI  | precision of eigsh solver                              |
-| --opt_t_max   | 1000    | LA/PI  | $T_{max}$, maximum number of iterations for COBYLA optimizer      |
+| --opt_t_max   | 100    | LA/PI  | $T_{max}$, maximum number of iterations for COBYLA optimizer      |
 | --opt_epsilon | 0.01    | LA/PI  | $\epsilon$, convergence threshold for COBYLA optimizer             |
 | --obj_alpha   | 1.0     | LA/PI  | $\alpha$, coefficient of connectivity objective                  |
 | --obj_gamma   | 0.5     | LA/PI  | $\gamma$, coefficient of weight regularization                   |
