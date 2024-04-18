@@ -22,7 +22,7 @@ def parse_args():
     p.add_argument('--embed_dim', type=int, default=64, help='embedding output demension')
     p.add_argument('--embed_rank', type=int, default=32, help='NETMF/SKETCHNE parameter' )
     p.add_argument('--eig_tol', type=float, default=1e-2, help='precision of eigsh solver' )
-    p.add_argument('--opt_t_max', type=int, default=1000, help='maximum number of iterations for COBYLA optimizer')
+    p.add_argument('--opt_t_max', type=int, default=100, help='maximum number of iterations for COBYLA optimizer')
     p.add_argument('--opt_epsilon', type=float, default=1e-2, help='convergence threshold for COBYLA optimizer')
     p.add_argument('--obj_alpha', type=float, default=1.0, help='coefficient of connectivity objective')
     p.add_argument('--obj_gamma', type=float, default=0.5, help='coefficient of weight regularization')
