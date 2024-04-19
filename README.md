@@ -6,7 +6,7 @@ This repository contains the implementation of **SMGF**  and **SMGFQ** algorithm
 
 Install dependencies by `conda create --name <env> --file requirements.txt -c pytorch`.
 
-Unzip the content of "data.zip" into "data" folder by `unzip data.zip` to use datasets except MAG-eng & MAG-phy.
+Unzip the content of "data.zip" into "data" folder by `unzip data.zip` to use datasets.
 
 ## Usage
 
@@ -43,41 +43,62 @@ Parameters used:
 | --ridge_alpha | 0.05    | $a_r$, regularization parameter for ridge regression         |
 
 To **reproduce** the results in our paper, please refer to the following command lines for testing corresponding datasets with your choosed method.
-#### SMGF Clustering and embedding:
+#### **SMGF** Clustering and embedding:
 ##### DBLP
-`python SMGF.py --dataset dblp`
+```
+python SMGF.py --dataset dblp
+```
 ##### DBLP
-`python SMGF.py --dataset dblp --embedding`
+```
+python SMGF.py --dataset dblp --embedding
+```
 ##### Yelp
-`python SMGF.py --dataset yelp --knn_k 200`
+```
+python SMGF.py --dataset yelp --knn_k 200
+```
 ##### Yelp
-`python SMGF.py --dataset yelp --knn_k 200 --embedding`
+```
+python SMGF.py --dataset yelp --knn_k 200 --embedding
+```
 
-#### SMGFQ Clustering and embedding:
+#### **SMGFQ** Clustering and embedding:
 ##### DBLP
-`python SMGFQ.py --dataset dblp`
+```
+python SMGFQ.py --dataset dblp
+```
 ##### DBLP
-`python SMGFQ.py --dataset dblp --embedding`
+```
+python SMGFQ.py --dataset dblp --embedding
+```
 ##### Yelp
-`python SMGFQ.py --dataset yelp --knn_k 200`
+```
+python SMGFQ.py --dataset yelp --knn_k 200
+```
 ##### Yelp
-`python SMGFQ.py --dataset yelp --knn_k 200 --embedding`
+```
+python SMGFQ.py --dataset yelp --knn_k 200 --embedding
+```
 
 Sample output of **SMGF**  for clustering and embedding on Yelp:
-```
+
+`
 Acc: 0.930 F1: 0.934 NMI: 0.739 ARI: 0.785 Time: 0.739s RAM: 214MB
-```
-```
+`
+
+`
 Labeled data 20%: f1_macro: 0.943, f1_micro: 0.938, roc_auc_macro: 0.990, roc_auc_micro: 0.991
 Time: 2.379s RAM: 421MB
-```
+`
+
 Sample output of **SMGFQ** for clustering and embedding on Yelp:
-```
+
+`
 Acc: 0.930 F1: 0.932 NMI: 0.733 ARI: 0.787 Time: 1.178s RAM: 215MB
-```
-```
+`
+
+`
 Labeled data 20%: f1_macro: 0.942, f1_micro: 0.937, roc_auc_macro: 0.990, roc_auc_micro: 0.991
 Time: 1.823s RAM: 419MB
-```
+`
 
 
