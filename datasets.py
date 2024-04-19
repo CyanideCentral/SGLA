@@ -50,7 +50,7 @@ def load_data(dataset_name):
         dataset['features'] = [attr_matrix,attr_matrix@attr_matrix.T]
         dataset['labels'] = data['labels']
     elif dataset_name in ['magphy','mageng']:
-        data = pickle.load(open(f"./data/scale/new_{dataset_name}.pkl", "rb"))
+        data = pickle.load(open(f"./data/{dataset_name}.pkl", "rb"))
         dataset['graphs'] = [data['PP'], data['AP'].T@data['AP']]
         dataset['features'] = [data['features'],data['features1']]
         dataset['labels'] = data['labels']
