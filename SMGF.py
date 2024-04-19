@@ -117,10 +117,10 @@ def SMGF_LA(dataset):
     if config.embedding:
         delta=sp.eye(dataset['n'])-mv_lap(sp.eye(dataset['n']))
         if config.scale:
-            from sketchne_graph import sketchne_graph
+            from sketchne import sketchne_graph
             emb = sketchne_graph(delta, dim = config.embed_dim, spec_propagation=False, window_size=10, eta1=32, eta2=32, eig_rank=64, power_iteration=20)
         else:
-            from embedding import netmf
+            from netmf import netmf
             emb = netmf(delta, dim = config.embed_dim,rank = config.embed_rank)
         embed_time = time.time() - start_time
         peak_memory_MBs = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024.0

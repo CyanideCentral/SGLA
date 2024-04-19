@@ -4,7 +4,6 @@ import numpy as np
 import time
 from sparse_dot_mkl import dot_product_mkl
 
-# X is n*k; X = U * S * V.T; return X * V * S^(-1/2) = U * S^(1/2)
 def eigSVD(X):
     M = X.T @ X
     S, V = np.linalg.eigh(M)
@@ -24,26 +23,22 @@ def deepwalk_filter(eigvals, window_size):
             eigvals[i] = x * (1 - x**window_size) / (1 - x) / window_size
         eigvals[i] = max(eigvals[i], 0)
     return eigvals
-# 
+
 def freigs(A, eig_rank, power_iteration, oversampling, convex_projection, upper, use_qr=False):
     l = eig_rank + oversampling
-    if upper: # use upper triangular part of A
+    if upper:
         A_triu = sp.triu(A)
         A = A_triu + A_triu.T - sp.diags(A.diagonal())
-    # omega = np.random.randn(A.shape[1], l)
-    omega = np.random.default_rng().random((A.shape[1], l)) # single-threaded
+    omega = np.random.default_rng().random((A.shape[1], l))
     Y = dot_product_mkl(A, omega, cast=True)
     if use_qr:
         Q, _ = sla.qr(Y, mode='economic')
     else:
         Q = eigSVD(Y)
-    # Power iteration
     pi_start = time.time()
     eigsvd_time = 0.
     for i in range(power_iteration):
-        # Q1 = A @ Q
         Q1 = dot_product_mkl(A, Q, cast=True)
-        # Q2 = A @ Q1
         Q2 = dot_product_mkl(A, Q1, cast=True)
         eigsvd_time_start = time.time()
         Q = eigSVD(Q2)
@@ -51,9 +46,8 @@ def freigs(A, eig_rank, power_iteration, oversampling, convex_projection, upper,
     print(f"Power iteration time: {time.time()-pi_start}")
     print(f"eigSVD time: {eigsvd_time}")
     if convex_projection: 
-        pass # TODO
+        pass
     else:
-        # M = Q.T @ A @ Q
         M = Q.T @ dot_product_mkl(A, Q, cast=True)
         SS, MV = np.linalg.eigh(M, UPLO='U')
         UU2 = MV[:, -eig_rank:]
@@ -64,7 +58,6 @@ def freigs(A, eig_rank, power_iteration, oversampling, convex_projection, upper,
 def random_signs(length):
     return np.random.choice([-1, 1], length)
 
-# sparse_sign_randomized_single_pass_svd
 def sketch_svds(F, CF, dim, s1, s2, eta1, eta2, normalize):
     n, eig_rank = F.shape
     l1 = dim + s1
@@ -72,9 +65,9 @@ def sketch_svds(F, CF, dim, s1, s2, eta1, eta2, normalize):
     spMat1 = sp.random(n, l1, density=(eta1*l1+0.5)/n/l1, format='csc', dtype=np.float32, data_rvs=random_signs, random_state=np.random.default_rng())
     CF_compressed = CF[:, spMat1.indices]
     M_compressed = F @ CF_compressed
-    M_compressed += 1.0 # single-threaded
-    M_compressed.clip(min=1.0, out=M_compressed) # single-threaded
-    np.log(M_compressed, out=M_compressed) # single-threaded
+    M_compressed += 1.0
+    M_compressed.clip(min=1.0, out=M_compressed)
+    np.log(M_compressed, out=M_compressed)
     Y = dot_product_mkl(M_compressed, spMat1[spMat1.indices,:],cast=True)
     Q = eigSVD(Y)
 
@@ -98,19 +91,14 @@ def sketch_svds(F, CF, dim, s1, s2, eta1, eta2, normalize):
     S = Sc[:dim]
     emb = U * np.sqrt(S)
     if normalize:
-        emb_norm = np.linalg.norm(emb, axis=1) # single-threaded (?)
+        emb_norm = np.linalg.norm(emb, axis=1)
         emb_norm[emb_norm==0] = 1
         emb /= emb_norm[:, np.newaxis]
     return emb
 
-def chebyshev_expansion(emb, A, order, theta, mu):
-    return emb
-
-# Python implementation of SketchNE
-def sketchne_graph(adj_matrix, window_size=10, negative_samples=1, alpha=0.5, eig_rank=256, power_iteration=10, oversampling=20, convex_projection=False, dim=128, eta1=8, eta2=8, s1=100, s2=1000, normalize=True, order=10, theta=0.5, mu=0.2, upper=False, spec_propagation=False):
+def sketchne_graph(adj_matrix, window_size=10, negative_samples=1, alpha=0.5, eig_rank=256, power_iteration=10, oversampling=20, convex_projection=False, dim=128, eta1=8, eta2=8, s1=100, s2=1000, normalize=True, order=10, theta=0.5, mu=0.2, upper=False):
     n = adj_matrix.shape[0]
     m = (adj_matrix.nnz - (adj_matrix.diagonal()>0).sum())/2
-    # compute D^(-alpha) A D^(-alpha)
     deg_vec = adj_matrix.sum(axis=1).A1
     deg_vec[deg_vec==0] = 1
     deg_alpha = deg_vec**(-alpha)
@@ -125,13 +113,13 @@ def sketchne_graph(adj_matrix, window_size=10, negative_samples=1, alpha=0.5, ei
         eigvals = deepwalk_filter(eigvals, window_size)
         para = m / negative_samples
         eigvals *= para
-        F = dot_product_mkl(D_alpha, U) # D^(-alpha) U
-        CF = dot_product_mkl(sp.diags(eigvals, format='csr'), F.T) # E D^(-alpha) U
+        F = dot_product_mkl(D_alpha, U)
+        CF = dot_product_mkl(sp.diags(eigvals, format='csr'), F.T)
     else:
         E_eigvals = sp.diags(eigvals, format='csr')
         F = dot_product_mkl(sp.diags(deg_vec ** (-1+alpha), format='csr'), U)
         res = dot_product_mkl(sp.diags(deg_vec ** (-1+2*alpha), format='csr'), U)
-        Ki = U.T @ res # Ki is diagonal?
+        Ki = U.T @ res
         K = dot_product_mkl(Ki , E_eigvals)
         K_iter = sp.identity(eig_rank, format='csr')
         evalsm = sp.identity(eig_rank, format='csr')
@@ -145,8 +133,4 @@ def sketchne_graph(adj_matrix, window_size=10, negative_samples=1, alpha=0.5, ei
         CF = evalsm @ F.T
     
     emb = sketch_svds(F, CF, dim, s1, s2, eta1, eta2, normalize)
-    if spec_propagation:
-        spec = chebyshev_expansion(emb, adj_matrix, order, theta, mu)
-        return spec
-    else:
-        return emb
+    return emb
