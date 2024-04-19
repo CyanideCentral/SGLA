@@ -1,104 +1,104 @@
 # SMGF: Spectrum-guided Multi-view Attributed Graph Fusion
 
-This repository contains the implementation of **SMGF**  and **SMGFQ** algorithm.
+This repository contains the implementation of **SMGF**  and **SMGFQ** algorithms.
 
 ## Prerequisites
 
-Install dependencies by `conda create --name <env> --file requirements.txt -c pytorch`.
+Install dependencies via Conda:
+```
+conda create --name SMGF --file requirements.txt -c pytorch
+conda activate SMGF
+```
 
-Unzip the content of "data.zip" into "data" folder by `unzip data.zip` to use datasets.
+Extract dataset files: 
+```
+unzip data.zip
+```
 
 ## Usage
 
-9 available datasets as follows: 
+The following command runs our algorithm on a certain dataset, with configurations as specified below.
 
-6 muliplex datasets: ACM, DBLP, IMDB, Yelp, Freebase, RM.
+```
+python <ALGORITHM>.py --dataset <DATASET> <OPTIONS>
+```
 
-3 graph datasets with mulipile features: Query, Amazon-photos, Amazon-computers.
+### Algorithms
 
-2 Spectrum-guided functions for multi-view attributed graph learning as follows:
+We provide two algorithms (**SMGF, SMGFQ**) for multi-view attributed graph clustering and embedding (see our paper for details).
 
-**SMGF** directly optimizes the objective with a derivative-free iterative method. 
+- **SMGF** iteratively minimizes the objective with the derivative-free COBYLA optimizer. 
 
-**SMGFQ** finds a surrogate objective via quadratic regression for efficient optimization. 
+- **SMGFQ** uses a quadratic interpolation technique to find an approximate optimum. 
 
-Please choose the one you want to use.
+### Datasets
 
-Parameters used:
+Replace \<DATASET\> with any of the following dataset names:
+
+ACM, DBLP, IMDB, Yelp, Freebase, RM, Query, Amazon-photos, Amazon-computers.
+
+Given the size limit on GitHub repositories, the MAG-phy and MAG-eng datasets are not uploaded.
+
+### Tasks
+
+By default, the above command runs the clustering task. For the embedding task, add `--embedding` to the command line arguments.
+
+### Full command line options
 
 | Parameter     | Default | Description                                                  |
 | ------------- | ------- | ------------------------------------------------------------ |
-| --dataset     | dblp    | choosed used dataset                                         |
-| --scale       | -       | configurations for large-scale data (mageng/magphy)          |
-| --verbose     | -       | produce verbose command-line output                          |
-| --embedding   | -       | configure for generating embedding, default clustering       |
-| --embed_dim   | 64      | embedding output demension                                   |
-| --embed_rank  | 32      | NETMF/SKETCHNE parameter for embedding                       |
-| --eig_tol     | 0.01    | precision of eigsh solver                                    |
-| --knn_k       | 10      | $K$, k neighbors except imdb=500, yelp=200, query=20         |
+| --dataset     | dblp    | Selected dataset                                         |
+| --embedding   | -       | Execute the embedding task instead of clustering       |
+| --knn_k       | 10      | $K$ in attribute KNNs (200 for Yelp, 500 for IMDB, 20 for Query)         |
+| --eig_tol     | 0.01    | Precision for EIGSH eigensolver                                    |
 | --opt_t_max   | 100     | $T_{max}$, maximum number of iterations for COBYLA optimizer |
 | --opt_epsilon | 0.01    | $\epsilon$, convergence threshold for COBYLA optimizer       |
 | --obj_alpha   | 1.0     | $\alpha$, coefficient of connectivity objective              |
 | --obj_gamma   | 0.5     | $\gamma$, coefficient of weight regularization               |
-| --ridge_alpha | 0.05    | $a_r$, regularization parameter for ridge regression         |
+| --ridge_alpha | 0.05    | $a_r$, regularization parameter for ridge regression (SMGFQ only)        |
+| --embed_dim   | 64      | Dimension of node embeddings                                  |
+| --embed_rank  | 32      | NETMF/SKETCHNE embedding algorithm parameter (64 for Freebase)                 |
+| --scale       | -       | Enable scalability configurations for MAG-eng and MAG-phy datasets         |
+| --verbose     | -       | Show verbose command-line output                          |
 
-To **reproduce** the results in our paper, please refer to the following command lines for testing corresponding datasets with your choosed method.
-#### **SMGF** Clustering and embedding:
-##### DBLP
-```
-python SMGF.py --dataset dblp
-```
-##### DBLP
-```
-python SMGF.py --dataset dblp --embedding
-```
-##### Yelp
+### Examples
+
+The following commands reproduce our results on the Yelp dataset.
+
+#### **SMGF**
+##### Yelp clustering
 ```
 python SMGF.py --dataset yelp --knn_k 200
 ```
-##### Yelp
+Sample output: 
+```
+Acc: 0.930 F1: 0.934 NMI: 0.739 ARI: 0.785 Time: 0.739s RAM: 214MB
+```
+##### Yelp embedding
 ```
 python SMGF.py --dataset yelp --knn_k 200 --embedding
 ```
+Sample output: 
+```
+Labeled data 20%: f1_macro: 0.943, f1_micro: 0.938, roc_auc_macro: 0.990, roc_auc_micro: 0.991
+Time: 2.379s RAM: 421MB
+```
 
-#### **SMGFQ** Clustering and embedding:
-##### DBLP
-```
-python SMGFQ.py --dataset dblp
-```
-##### DBLP
-```
-python SMGFQ.py --dataset dblp --embedding
-```
-##### Yelp
+#### **SMGFQ**
+##### Yelp clustering
 ```
 python SMGFQ.py --dataset yelp --knn_k 200
 ```
-##### Yelp
+Sample output: 
+```
+Acc: 0.930 F1: 0.932 NMI: 0.733 ARI: 0.787 Time: 1.178s RAM: 215MB
+```
+##### Yelp embedding
 ```
 python SMGFQ.py --dataset yelp --knn_k 200 --embedding
 ```
-
-Sample output of **SMGF**  for clustering and embedding on Yelp:
-
-`
-Acc: 0.930 F1: 0.934 NMI: 0.739 ARI: 0.785 Time: 0.739s RAM: 214MB
-`
-
-`
-Labeled data 20%: f1_macro: 0.943, f1_micro: 0.938, roc_auc_macro: 0.990, roc_auc_micro: 0.991
-Time: 2.379s RAM: 421MB
-`
-
-Sample output of **SMGFQ** for clustering and embedding on Yelp:
-
-`
-Acc: 0.930 F1: 0.932 NMI: 0.733 ARI: 0.787 Time: 1.178s RAM: 215MB
-`
-
-`
+Sample output: 
+```
 Labeled data 20%: f1_macro: 0.942, f1_micro: 0.937, roc_auc_macro: 0.990, roc_auc_micro: 0.991
 Time: 1.823s RAM: 419MB
-`
-
-
+```
