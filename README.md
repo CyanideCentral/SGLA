@@ -65,8 +65,7 @@ By default, the above command runs the clustering task. For the embedding task, 
 
 The following commands reproduce our results on the Yelp dataset.
 
-#### **SMGF**
-##### Yelp clustering
+#### **SMGF** clustering
 ```
 python SMGF.py --dataset yelp --knn_k 200
 ```
@@ -74,7 +73,7 @@ Sample output:
 ```
 Acc: 0.930 F1: 0.934 NMI: 0.739 ARI: 0.785 Time: 0.739s RAM: 214MB
 ```
-##### Yelp embedding
+##### **SMGF** embedding
 ```
 python SMGF.py --dataset yelp --knn_k 200 --embedding
 ```
@@ -84,8 +83,7 @@ Labeled data 20%: f1_macro: 0.943, f1_micro: 0.938, roc_auc_macro: 0.990, roc_au
 Time: 2.379s RAM: 421MB
 ```
 
-#### **SMGFQ**
-##### Yelp clustering
+#### **SMGFQ** clustering
 ```
 python SMGFQ.py --dataset yelp --knn_k 200
 ```
@@ -93,7 +91,7 @@ Sample output:
 ```
 Acc: 0.930 F1: 0.932 NMI: 0.733 ARI: 0.787 Time: 1.178s RAM: 215MB
 ```
-##### Yelp embedding
+#### **SMGFQ** embedding
 ```
 python SMGFQ.py --dataset yelp --knn_k 200 --embedding
 ```
