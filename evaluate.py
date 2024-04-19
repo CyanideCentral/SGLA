@@ -62,10 +62,10 @@ class clustering_metrics():
 def ovr_evaluate(embeds, labels):
     # Labeled data from 10% to 90%
     if config.scale:
-        labeled = np.arange(0.9, 1.0, 0.01)[::-1]
+        unlabeled = np.asarray([0.99])
     else:
-        labeled = np.arange(0.1, 1.0, 0.1)[::-1]
-    for test_ratio in labeled:
+        unlabeled = np.asarray([0.8])
+    for test_ratio in unlabeled:
         f1macros = []
         f1micros = []
         roc_auc_macros = []
@@ -83,6 +83,5 @@ def ovr_evaluate(embeds, labels):
             f1micros.append(metrics.f1_score(test_y, pred_labels, average='micro'))
             roc_auc_macros.append(metrics.roc_auc_score(test_y, pred_probs, average='macro', multi_class='ovr'))
             roc_auc_micros.append(metrics.roc_auc_score(test_y, pred_probs, average='micro', multi_class='ovr'))
-        print(f'Labeled data {int(100-test_ratio*100)}%: {np.mean(f1macros)} {np.mean(f1micros)} {np.mean(roc_auc_macros)} {np.mean(roc_auc_micros)}')
         print(f'Labeled data {int(100-test_ratio*100)}%: f1_macro: {np.mean(f1macros):.3f}, f1_micro: {np.mean(f1micros):.3f}, roc_auc_macro: {np.mean(roc_auc_macros):.3f}, roc_auc_micro: {np.mean(roc_auc_micros):.3f}')
     return np.mean(f1macros), np.mean(f1micros), np.mean(roc_auc_macros), np.mean(roc_auc_micros)

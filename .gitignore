@@ -4,3 +4,5 @@ bash.sh
 *log
 scale/
 tests.sh
+total_data.zip
+./gitignore
