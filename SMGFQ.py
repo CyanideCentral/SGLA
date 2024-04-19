@@ -138,7 +138,7 @@ def SMGF_PI(dataset):
         delta=sp.eye(dataset['n'])-mv_lap(sp.eye(dataset['n']))
         if config.scale:
             from sketchne_graph import sketchne_graph
-            emb = sketchne_graph(delta, dim = config.embed_dim, spec_propagation=False, window_size=10, eta1=32, eta2=32, eig_rank=config.embed_rank, power_iteration=20)
+            emb = sketchne_graph(delta, dim = config.embed_dim, spec_propagation=False, window_size=10, eta1=32, eta2=32, eig_rank=64, power_iteration=20)
         else:
             from embedding import netmf
             emb = netmf(delta, dim = config.embed_dim,rank = config.embed_rank)
@@ -169,6 +169,7 @@ if __name__ == '__main__':
     dataset = load_data(args.dataset)
     if args.dataset.startswith("mag"):
         config.scale = True
-        config.embed_rank=64
+    if args.dataset == "freebase":
+        config.embed_rank=128
     SMGF_PI(dataset)
 
