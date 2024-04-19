@@ -25,7 +25,7 @@ python <ALGORITHM>.py --dataset <DATASET> <OPTIONS>
 
 ### Algorithms
 
-We provide two algorithms (**SMGF, SMGFQ**) for multi-view attributed graph clustering and embedding (see our paper for details).
+We provide two algorithms for multi-view attributed graph clustering and embedding: (see our paper for details)
 
 - **SMGF** iteratively minimizes the objective with the derivative-free COBYLA optimizer. 
 
@@ -37,7 +37,7 @@ Replace \<DATASET\> with any of the following dataset names:
 
 ACM, DBLP, IMDB, Yelp, Freebase, RM, Query, Amazon-photos, Amazon-computers.
 
-Given the size limit on GitHub repositories, the MAG-phy and MAG-eng datasets are not uploaded.
+Given the size limit on GitHub repositories, the MAG-phy and MAG-eng datasets will be released later.
 
 ### Tasks
 
