@@ -73,7 +73,7 @@ Sample output:
 ```
 Acc: 0.930 F1: 0.934 NMI: 0.739 ARI: 0.785 Time: 0.739s RAM: 214MB
 ```
-##### **SMGF** embedding
+#### **SMGF** embedding
 ```
 python SMGF.py --dataset yelp --knn_k 200 --embedding
 ```
