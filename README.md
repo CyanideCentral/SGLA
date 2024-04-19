@@ -1,4 +1,4 @@
-# SMGF: Spectrum-guided Multi-view Graph Fusion
+# SMGF: Spectrum-guided Multi-view Attributed Graph Fusion
 
 This repository contains the implementation of **SMGF**  and **SMGFQ** algorithm.
 
