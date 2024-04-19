@@ -63,7 +63,7 @@ By default, the above command runs the clustering task. For the embedding task, 
 
 ### Examples
 
-The following commands reproduce our results on the Yelp dataset.
+The following commands reproduce our results on the *Yelp* dataset.
 
 #### **SMGF** clustering
 ```
