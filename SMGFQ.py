@@ -44,7 +44,7 @@ def parse_args():
     config.ridge_alpha = args.ridge_alpha
     return args
 
-def SMGF_PI(dataset):
+def SMGFQ(dataset):
     num_clusters = dataset['k']
     n = dataset['n']
     nv = dataset['nv']
@@ -114,7 +114,7 @@ def SMGF_PI(dataset):
         obj = eig_val[num_clusters-1] / eig_val[num_clusters] - config.obj_alpha*eig_val[1]
         sample_obj.append(obj)
 
-    # Parabolic interpolation
+    # Quadratic interpolation
     x = np.asarray(sample_w)[:,:-1]
     y = np.asarray(sample_obj)
     poly_reg =PolynomialFeatures(degree=2) 
@@ -171,5 +171,5 @@ if __name__ == '__main__':
         config.scale = True
     if args.dataset == "freebase":
         config.embed_rank=128
-    SMGF_PI(dataset)
+    SMGFQ(dataset)
 
