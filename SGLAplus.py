@@ -42,11 +42,7 @@ def parse_args():
     config.ridge_alpha = args.ridge_alpha
     return args
 
-<<<<<<< HEAD:SGLAplus.py
 def SGLAplus(dataset):
-=======
-def SMGFQ(dataset):
->>>>>>> 793ed54f25ea5524cf42c0308eca77fba30a5455:SMGFQ.py
     num_clusters = dataset['k']
     n = dataset['n']
     nv = dataset['nv']
@@ -123,10 +119,7 @@ def SMGFQ(dataset):
         obj = eig_val[num_clusters-1] / eig_val[num_clusters] - eig_val[1]
         sample_obj.append(obj)
 
-<<<<<<< HEAD:SGLAplus.py
-=======
-    # Quadratic interpolation
->>>>>>> 793ed54f25ea5524cf42c0308eca77fba30a5455:SMGFQ.py
+    # Sampling and Quadratic interpolation
     x = np.asarray(sample_w)[:,:-1]
     y = np.asarray(sample_obj)
     poly_reg =PolynomialFeatures(degree=2) 
@@ -175,12 +168,5 @@ if __name__ == '__main__':
     dataset = load_data(args.dataset)
     if args.dataset.startswith("mag"):
         config.scale = True
-<<<<<<< HEAD:SGLAplus.py
     SGLAplus(dataset)
-
-=======
-    if args.dataset == "freebase":
-        config.embed_rank=128
-    SMGFQ(dataset)
->>>>>>> 793ed54f25ea5524cf42c0308eca77fba30a5455:SMGFQ.py
 
