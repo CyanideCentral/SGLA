@@ -36,14 +36,10 @@ def freigs(A, eig_rank, power_iteration, oversampling, convex_projection, upper,
     else:
         Q = eigSVD(Y)
     # Power iteration
-    pi_start = time.time()
-    eigsvd_time = 0.
     for i in range(power_iteration):
         Q1 = dot_product_mkl(A, Q, cast=True)
         Q2 = dot_product_mkl(A, Q1, cast=True)
-        eigsvd_time_start = time.time()
         Q = eigSVD(Q2)
-        eigsvd_time += time.time() - eigsvd_time_start
     if convex_projection: 
         pass # TODO
     else:

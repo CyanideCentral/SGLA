@@ -78,7 +78,7 @@ def SGLA(dataset):
     computed_g = [g_dvs[i]@dot_product_mkl(g_adjs[i], g_dvs[i],cast = True) for i in range(len(g_adjs))]
     computed_knn = [knn_dvs[i]@dot_product_mkl(knn_adjs[i], knn_dvs[i],cast = True) for i in range(len(knn_adjs))]
     
-    # Linear operator of multi-view Laplacian
+    # Linear operator of multi-view Laplacian for EIGSH
     def mv_lap(mat):
         if config.scale:
             product = np.zeros_like(mat, dtype='float32')
@@ -107,7 +107,7 @@ def SGLA(dataset):
     w_constraint = [{'type': 'ineq', 'fun': lambda w: 1.0 - np.sum(w)}, {'type': 'ineq', 'fun': lambda w: min(w)}, {'type': 'ineq', 'fun': lambda w: 1.0-max(w)}]
     opt_w = minimize(eig_obj, np.full((nv-1), 1.0/nv), method='COBYLA', tol=config.epsilon, constraints=w_constraint, options={'maxiter': config.tmax, 'rhobeg': config.cobyla_rhobeg, 'disp': config.verbose})
     if config.verbose:
-        print(f"opt_time: {time.time()-opt_time}")
+        print(f"Time for optimization: {time.time()-opt_time}")
 
     if config.embedding:
         delta=sp.eye(dataset['n'],dtype="float32")-mv_lap(sp.eye(dataset['n'],format="csr",dtype="float32"))

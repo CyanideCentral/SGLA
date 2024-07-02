@@ -82,7 +82,7 @@ def SGLAplus(dataset):
     computed_g = [g_dvs[i]@dot_product_mkl(g_adjs[i], g_dvs[i],cast = True) for i in range(len(g_adjs))]
     computed_knn = [knn_dvs[i]@dot_product_mkl(knn_adjs[i], knn_dvs[i],cast = True) for i in range(len(knn_adjs))]
     
-    # Linear operator of multi-view Laplacian
+    # Linear operator of multi-view Laplacian for EIGSH
     def mv_lap(mat):
         if config.scale:
             product = np.zeros_like(mat, dtype='float32')
@@ -99,7 +99,6 @@ def SGLAplus(dataset):
     lapLO = sla.LinearOperator((n, n), matvec=mv_lap, rmatvec=mv_lap, dtype='float32')
 
     #   Sampling and quadratic interpolation
-    opt_time = time.time()
     sample_obj=[]
     sample_w = []
     centroid = np.full(nv, 1.0/nv)
@@ -117,7 +116,7 @@ def SGLAplus(dataset):
         obj = eig_val[num_clusters-1] / eig_val[num_clusters] - eig_val[1]
         sample_obj.append(obj)
 
-    # Sampling and Quadratic interpolation
+    # Quadratic interpolation
     x = np.asarray(sample_w)[:,:-1]
     y = np.asarray(sample_obj)
     poly_reg =PolynomialFeatures(degree=2) 
@@ -135,7 +134,7 @@ def SGLAplus(dataset):
     view_weights[:-1] = opt_w
     view_weights[-1] = 1.0 - np.sum(opt_w)
     if config.verbose:
-        print(f"opt_time: {time.time()-opt_time}")
+        print(f"Time for optimization: {time.time()-opt_time}")
 
     if config.embedding:
         delta=sp.eye(dataset['n'],dtype="float32")-mv_lap(sp.eye(dataset['n'],format="csr",dtype="float32"))
