@@ -6,8 +6,8 @@ This repository contains the implementation of **SGLA**  and **SGLA+** algorithm
 
 Install dependencies via Conda:
 ```
-conda create --name SMGF --file requirements.txt -c pytorch
-conda activate SMGF
+conda create --name SGLA --file requirements.txt -c pytorch
+conda activate SGLA
 ```
 
 Extract dataset files: 
@@ -27,9 +27,9 @@ python <ALGORITHM>.py --dataset <DATASET> <OPTIONS>
 
 We provide two algorithms for multi-view attributed graph clustering and embedding: (see our paper for details)
 
-- **SMGF** iteratively minimizes the objective with the derivative-free COBYLA optimizer. 
+- **SGLA** iteratively minimizes the objective with the derivative-free COBYLA optimizer. 
 
-- **SMGFQ** uses a quadratic interpolation technique to find an approximate optimum. 
+- **SGLA+** uses a quadratic interpolation technique to find an approximate optimum. 
 
 ### Datasets
 
@@ -55,7 +55,7 @@ By default, the above command runs the clustering task. For the embedding task, 
 | --opt_epsilon | 0.01    | $\epsilon$, convergence threshold for COBYLA optimizer       |
 | --obj_alpha   | 1.0     | $\alpha$, coefficient of connectivity objective              |
 | --obj_gamma   | 0.5     | $\gamma$, coefficient of weight regularization               |
-| --ridge_alpha | 0.05    | $a_r$, regularization parameter for ridge regression (SMGFQ only)        |
+| --ridge_alpha | 0.05    | $a_r$, regularization parameter for ridge regression (SGLA+ only)        |
 | --embed_dim   | 64      | Dimension of node embeddings                                  |
 | --embed_rank  | 32      | NETMF/SKETCHNE embedding algorithm parameter (64 for Freebase)                 |
 | --scale       | -       | Enable scalability configurations for MAG-eng and MAG-phy datasets         |
@@ -65,17 +65,17 @@ By default, the above command runs the clustering task. For the embedding task, 
 
 The following commands reproduce our results on the *Yelp* dataset.
 
-#### **SMGF** clustering
+#### **SGLA** clustering
 ```
-python SMGF.py --dataset yelp --knn_k 200
+python SGLA.py --dataset yelp --knn_k 200
 ```
 Sample output: 
 ```
 Acc: 0.930 F1: 0.934 NMI: 0.739 ARI: 0.785 Time: 0.739s RAM: 214MB
 ```
-#### **SMGF** embedding
+#### **SGLA** embedding
 ```
-python SMGF.py --dataset yelp --knn_k 200 --embedding
+python SGLA.py --dataset yelp --knn_k 200 --embedding
 ```
 Sample output: 
 ```
@@ -83,17 +83,17 @@ Labeled data 20%: f1_macro: 0.943, f1_micro: 0.938, roc_auc_macro: 0.990, roc_au
 Time: 2.379s RAM: 421MB
 ```
 
-#### **SMGFQ** clustering
+#### **SGLA+** clustering
 ```
-python SMGFQ.py --dataset yelp --knn_k 200
+python SGLA+.py --dataset yelp --knn_k 200
 ```
 Sample output: 
 ```
 Acc: 0.930 F1: 0.932 NMI: 0.733 ARI: 0.787 Time: 1.178s RAM: 215MB
 ```
-#### **SMGFQ** embedding
+#### **SGLA+** embedding
 ```
-python SMGFQ.py --dataset yelp --knn_k 200 --embedding
+python SGLA+.py --dataset yelp --knn_k 200 --embedding
 ```
 Sample output: 
 ```
