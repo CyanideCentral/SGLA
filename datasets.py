@@ -8,12 +8,7 @@ import config as config
 def load_data(dataset_name):
     dataset = {}
     dataset_name = dataset_name.lower()
-    if dataset_name == 'acm':
-        data = sio.loadmat("./data/ACM3025.mat")
-        dataset['graphs'] = [sp.csr_matrix(data['PAP']), sp.csr_matrix(data['PLP'])]
-        dataset['features'] = [sp.csr_matrix(data['feature'])]
-        dataset['labels'] = data['label']
-    elif dataset_name == 'dblp':
+    if dataset_name == 'dblp':
         data = sio.loadmat("./data/DBLP4057_GAT_with_idx.mat")
         dataset['graphs'] = [sp.csr_matrix(data['net_APA']), sp.csr_matrix(data['net_APCPA']), sp.csr_matrix(data['net_APTPA'])]
         dataset['features'] = [sp.csr_matrix(data['features'])]
@@ -28,21 +23,11 @@ def load_data(dataset_name):
         dataset['graphs'] = [sp.csr_matrix(g) for g in [data['BUB'], data['BSB']]]
         dataset['features'] = [data['features']]
         dataset['labels'] = data['labels']
-    elif dataset_name == 'freebase':
-        data = pickle.load(open("./data/freebase.pkl", "rb"))
-        dataset['graphs'] = [sp.csr_matrix(g) for g in [data['MAM'], data['MWM'],data['MDM']]]
-        dataset['features'] = [data['feature']]
-        dataset['labels'] = data['label']
     elif dataset_name =='rm':
         data = pickle.load(open(f"./data/rm.pkl", "rb"))
         dataset['graphs'] = data['graphs']
         dataset['features'] = data['features']
         dataset['labels'] = data['labels']
-    elif dataset_name =='query':
-        data = pickle.load(open("./data/query.pkl", "rb"))
-        dataset['graphs'] = [sp.csr_matrix(g) for g in [data['graphs']]]
-        dataset['features'] = [data['features'],data['features1']]
-        dataset['labels'] = data['label']
     elif dataset_name in ['amazon-computers', 'amazon-photos']:
         data = dict(np.load(f"./data/{dataset_name}.npz"))
         dataset['graphs'] = [sp.csr_matrix((data['adj_data'], data['adj_indices'], data['adj_indptr']), shape=data['adj_shape'])]
