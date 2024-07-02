@@ -20,22 +20,20 @@ def parse_args():
     p.add_argument('--scale', action='store_true', help='configurations for large-scale data (mageng/magphy)')
     p.add_argument('--embedding', action='store_true', help='run embedding task')
     p.add_argument('--verbose', action='store_true', help='print verbose logs')
-    p.add_argument('--knn_k', type=int, default=10, help='k neighbors except imdb=500, yelp=200' )
+    p.add_argument('--knn', type=int, default=10, help='k neighbors except imdb=500, yelp=200' )
     p.add_argument('--embed_dim', type=int, default=64, help='embedding output demension')
-    p.add_argument('--eig_tol', type=float, default=1e-2, help='precision of eigsh solver' )
-    p.add_argument('--opt_t_max', type=int, default=100, help='maximum number of iterations for COBYLA optimizer')
-    p.add_argument('--opt_epsilon', type=float, default=0.001, help='convergence threshold for COBYLA optimizer')
-    p.add_argument('--obj_gamma', type=float, default=0.5, help='coefficient of weight regularization')
+    p.add_argument('--tmax', type=int, default=100, help='maximum number of iterations for COBYLA optimizer')
+    p.add_argument('--epsilon', type=float, default=0.001, help='convergence threshold for COBYLA optimizer')
+    p.add_argument('--gamma', type=float, default=0.5, help='coefficient of weight regularization')
     
     args = p.parse_args()
     config.verbose = args.verbose
     config.embedding = args.embedding
-    config.knn_k = args.knn_k
+    config.knn = args.knn
     config.embed_dim = args.embed_dim
-    config.eig_tol = args.eig_tol
-    config.opt_t_max = args.opt_t_max
-    config.opt_epsilon = args.opt_epsilon
-    config.obj_gamma = args.obj_gamma
+    config.tmax = args.tmax
+    config.epsilon = args.epsilon
+    config.gamma = args.gamma
     return args
 
 def SGLA(dataset):
@@ -64,7 +62,7 @@ def SGLA(dataset):
         else:
             index = faiss.index_factory(ftd.shape[1], "Flat", faiss.METRIC_INNER_PRODUCT)
         index.add(ftd)
-        distances, neighbors = index.search(ftd, config.knn_k+1)
+        distances, neighbors = index.search(ftd, config.knn+1)
         knn = sp.csr_matrix(((distances.ravel()), neighbors.ravel(), np.arange(0, neighbors.size+1, neighbors.shape[1])), shape=(n, n))
         knn.setdiag(0.0)
         knn = knn + knn.T
@@ -104,10 +102,10 @@ def SGLA(dataset):
         eig_val = sla.eigsh(lapLO, num_clusters+1, which='SM', tol=config.eig_tol, maxiter=1000, return_eigenvectors=False)
         eig_val = eig_val.real
         eig_val.sort()
-        return eig_val[num_clusters-1] / eig_val[num_clusters] - eig_val[1] + config.obj_gamma*np.power(np.asarray(view_weights),2).sum()
+        return eig_val[num_clusters-1] / eig_val[num_clusters] - eig_val[1] + config.gamma*np.power(np.asarray(view_weights),2).sum()
     
     w_constraint = [{'type': 'ineq', 'fun': lambda w: 1.0 - np.sum(w)}, {'type': 'ineq', 'fun': lambda w: min(w)}, {'type': 'ineq', 'fun': lambda w: 1.0-max(w)}]
-    opt_w = minimize(eig_obj, np.full((nv-1), 1.0/nv), method='COBYLA', tol=config.opt_epsilon, constraints=w_constraint, options={'maxiter': config.opt_t_max, 'rhobeg': config.opt_cobyla_rhobeg, 'disp': config.verbose})
+    opt_w = minimize(eig_obj, np.full((nv-1), 1.0/nv), method='COBYLA', tol=config.epsilon, constraints=w_constraint, options={'maxiter': config.tmax, 'rhobeg': config.cobyla_rhobeg, 'disp': config.verbose})
     if config.verbose:
         print(f"opt_time: {time.time()-opt_time}")
 

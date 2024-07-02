@@ -22,23 +22,21 @@ def parse_args():
     p.add_argument('--scale', action='store_true', help='configurations for large-scale data (mageng/magphy)')
     p.add_argument('--embedding', action='store_true', help='run embedding task')
     p.add_argument('--verbose', action='store_true', help='print verbose logs')
-    p.add_argument('--knn_k', type=int, default=10, help='k neighbors except imdb=500, yelp=200' )
+    p.add_argument('--knn', type=int, default=10, help='k neighbors except imdb=500, yelp=200' )
     p.add_argument('--embed_dim', type=int, default=64, help='embedding output demension')
-    p.add_argument('--eig_tol', type=float, default=1e-2, help='precision of eigsh solver' )
-    p.add_argument('--opt_t_max', type=int, default=100, help='maximum number of iterations for COBYLA optimizer')
-    p.add_argument('--opt_epsilon', type=float, default=0.001, help='convergence threshold for COBYLA optimizer')
-    p.add_argument('--obj_gamma', type=float, default=0.5, help='coefficient of weight regularization')
+    p.add_argument('--tmax', type=int, default=100, help='maximum number of iterations for COBYLA optimizer')
+    p.add_argument('--epsilon', type=float, default=0.001, help='convergence threshold for COBYLA optimizer')
+    p.add_argument('--gamma', type=float, default=0.5, help='coefficient of weight regularization')
     p.add_argument('--ridge_alpha',type=float, default=0.05, help='regularization parameter for ridge regression')
     
     args = p.parse_args()
     config.verbose = args.verbose
     config.embedding = args.embedding
-    config.knn_k = args.knn_k
+    config.knn = args.knn
     config.embed_dim = args.embed_dim
-    config.eig_tol = args.eig_tol
-    config.opt_t_max = args.opt_t_max
-    config.opt_epsilon = args.opt_epsilon
-    config.obj_gamma = args.obj_gamma
+    config.tmax = args.tmax
+    config.epsilon = args.epsilon
+    config.gamma = args.gamma
     config.ridge_alpha = args.ridge_alpha
     return args
 
@@ -68,7 +66,7 @@ def SGLAplus(dataset):
         else:
             index = faiss.index_factory(ftd.shape[1], "Flat", faiss.METRIC_INNER_PRODUCT)
         index.add(ftd)
-        distances, neighbors = index.search(ftd, config.knn_k+1)
+        distances, neighbors = index.search(ftd, config.knn+1)
         knn = sp.csr_matrix(((distances.ravel()), neighbors.ravel(), np.arange(0, neighbors.size+1, neighbors.shape[1])), shape=(n, n))
         knn.setdiag(0.0)
         knn = knn + knn.T
@@ -131,9 +129,9 @@ def SGLAplus(dataset):
     def objective_function(w):
         view_weights[:-1] = w
         view_weights[-1] = 1.0 - np.sum(w)
-        return lin_reg_2.predict(poly_reg.fit_transform(np.asarray(view_weights[:-1]).reshape(1,-1))) + config.obj_gamma*np.power(np.asarray(view_weights),2).sum()
+        return lin_reg_2.predict(poly_reg.fit_transform(np.asarray(view_weights[:-1]).reshape(1,-1))) + config.gamma*np.power(np.asarray(view_weights),2).sum()
     opt_time=time.time()
-    opt_w = fmin_cobyla(objective_function, np.full((nv-1), 1.0/nv), w_constraint, rhoend=config.opt_epsilon, maxfun=config.opt_t_max, rhobeg=config.opt_cobyla_rhobeg, catol=0.0000001, disp=3 if config.verbose else 0)
+    opt_w = fmin_cobyla(objective_function, np.full((nv-1), 1.0/nv), w_constraint, rhoend=config.epsilon, maxfun=config.tmax, rhobeg=config.cobyla_rhobeg, catol=0.0000001, disp=3 if config.verbose else 0)
     view_weights[:-1] = opt_w
     view_weights[-1] = 1.0 - np.sum(opt_w)
     if config.verbose:
