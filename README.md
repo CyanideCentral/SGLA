@@ -1,6 +1,6 @@
-# SMGF: Spectrum-guided Multi-view Attributed Graph Fusion
+# SGLA: Spectrum-Guided Laplacian Aggregation
 
-This repository contains the implementation of **SMGF**  and **SMGFQ** algorithms.
+This repository contains the implementation of **SGLA**  and **SGLA+** algorithms.
 
 ## Prerequisites
 
