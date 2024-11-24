@@ -31,7 +31,7 @@ Available command line options:
 | --embedding   | -       | Run embedding task (The default task is clustering)       |
 | --embed_dim   | 64      | Dimension of generated node embeddings                                   |
 | --knn       | 10      | $K$ for KNN (Set 200 for Yelp, 500 for IMDB)         |
-| --tmax   | 100     | $T_{max}$, maximum number of iterations for COBYLA optimizer |
+| --tmax   | 50     | $T_{max}$, maximum number of iterations for COBYLA optimizer |
 | --epsilon | 0.001   | $\epsilon$, convergence threshold for COBYLA optimizer       |
 | --gamma   | 0.5     | $\gamma$, regularization hyperparameter               |
 | --ridge_alpha | 0.05    | $a_r$, regularization parameter for ridge regression         |
