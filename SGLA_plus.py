@@ -24,7 +24,7 @@ def parse_args():
     p.add_argument('--verbose', action='store_true', help='print verbose logs')
     p.add_argument('--knn', type=int, default=10, help='k neighbors except imdb=500, yelp=200' )
     p.add_argument('--embed_dim', type=int, default=64, help='embedding output demension')
-    p.add_argument('--tmax', type=int, default=100, help='maximum number of iterations for COBYLA optimizer')
+    p.add_argument('--tmax', type=int, default=50, help='maximum number of iterations for COBYLA optimizer')
     p.add_argument('--epsilon', type=float, default=0.001, help='convergence threshold for COBYLA optimizer')
     p.add_argument('--gamma', type=float, default=0.5, help='coefficient of weight regularization')
     p.add_argument('--ridge_alpha',type=float, default=0.05, help='regularization parameter for ridge regression')
