@@ -1,6 +1,6 @@
 # SGLA and SGLA+: Efficient Integration of Multi-View Attributed Graphs for Clustering and Embedding
 
-This repository contains the implementation of **SGLA**  and **SGLA+** algorithms for multi-view attributed graphs (MVAG).
+This repository contains the implementation of **SGLA**  and **SGLA+** algorithms for multi-view attributed graphs. The research paper will be presented at ICDE 2025.
 
 ## Prerequisites
 
@@ -9,9 +9,14 @@ Install dependencies:
 conda create --name SGLA --file requirements.txt -c pytorch
 ```
 
-6 MVAG datasets (RM, Yelp, IMDB, DBLP, Amazon photos, Amazon computers) can be extracted from the zipfile. The MAG datasets will be made accessible upon publication.
+6 MVAG datasets (RM, Yelp, IMDB, DBLP, Amazon photos, Amazon computers) can be extracted from the zipfile.
 ```
 unzip data.zip
+```
+
+(Optional) Large-scale datasets MAG-eng and MAG-phy are available via [Zenodo](https://zenodo.org/records/15099668). Extract dataset files by:
+```
+unzip <download_path>/mag_data.zip -d data/
 ```
 
 ## Usage
@@ -36,7 +41,22 @@ Available command line options:
 | --gamma   | 0.5     | $\gamma$, regularization hyperparameter               |
 | --ridge_alpha | 0.05    | $a_r$, regularization parameter for ridge regression         |
 
-To **reproduce** the results in our paper, the following examples are provided for reference.
+To **reproduce** the results in our paper, use following commands to run SGLA.py (or SGLA_plus.py for SGLA+) for clustering or append " --embedding" for embedding.
+
+```
+python SGLA.py --dataset rm
+python SGLA.py --dataset yelp --knn 200
+python SGLA.py --dataset idmb --knn 500
+python SGLA.py --dataset dblp
+python SGLA.py --dataset amazon-photos
+python SGLA.py --dataset amazon-computers
+python SGLA.py --dataset mageng --scale
+python SGLA.py --dataset magphy --scale
+```
+
+## Examples
+
+We give experiment details on the Yelp dataset for reference.
 
 #### **SGLA**
 ##### Run clustering on Yelp
